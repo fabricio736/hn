@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards de Agricultura</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --background: #f1f8e9;
+            --card-bg: #ffffff;
+            --text: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            width: 100%;
+            text-align: center;
+            padding: 1rem 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+        }
+
+        /* Estrutura do Flashcard */
+        .flashcard-container {
+            perspective: 1000px;
+            width: 100%;
+            height: 300px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-radius: 15px;
+        }
+
+        .flashcard.flip {
+            transform: rotateY(180deg);
+        }
+
+        .front, .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            box-sizing: border-box;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        .front {
+            background-color: var(--card-bg);
+            border: 3px solid var(--primary);
+            color: var(--primary-dark);
+        }
+
+        .back {
+            background-color: var(--primary);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        /* Botões de Navegação */
+        .controls {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .progress {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Flashcards de Agricultura</h1>
+    </header>
+
+    <div class="container">
+        <div class="flashcard-container" onclick="flipCard()">
+            <div class="flashcard" id="card">
+                <div class="front" id="card-front">Carregando pergunta...</div>
+                <div class="back" id="card-back">Carregando resposta...</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button onclick="prevCard()">Anterior</button>
+            <button onclick="nextCard()">Próximo</button>
+        </div>
+
+        <div class="progress" id="progress-text">Carta 1 de 1</div>
+    </div>
+
+    <script>
+        // Banco de dados dos flashcards sobre agricultura
+        const flashcards = [
+            {
+                q: "O que é a Hidroponia?",
+                a: "É a técnica de cultivar plantas sem solo, onde as raízes recebem uma solução nutritiva balanceada contendo água e nutrientes essenciais."
+            },
+            {
+                q: "Qual a função principal da Rotação de Culturas?",
+                a: "Alternar diferentes espécies vegetais numa mesma área para preservar os nutrientes do solo, quebrar o ciclo de pragas e evitar a erosão."
+            },
+            {
+                q: "O que caracteriza a Agricultura de Precisão?",
+                a: "O uso de tecnologias avançadas (como GPS, sensores e drones) para gerenciar o campo de forma detalhada, otimizando o uso de insumos."
+            },
+            {
+                q: "O que é Silvicultura?",
+                a: "É a ciência ou prática de criar e cultivar florestas para a produção de madeira, celulose ou para preservação ambiental."
+            },
+            {
+                q: "O que diferencia a agricultura orgânica da convencional?",
+                a: "A orgânica não utiliza fertilizantes sintéticos, defensivos químicos agressivos ou sementes transgênicas, focando na sustentabilidade."
+            }
+        ];
+
+        let currentIndex = 0;
+        const cardElement = document.getElementById('card');
+        const frontElement = document.getElementById('card-front');
+        const backElement = document.getElementById('card-back');
+        const progressElement = document.getElementById('progress-text');
+
+        function updateCard() {
+            // Remove a rotação antes de trocar o texto
+            cardElement.classList.remove('flip');
+            
+            // Aguarda um pequeno momento para trocar o conteúdo (suavidade visual)
+            setTimeout(() => {
+                frontElement.textContent = flashcards[currentIndex].q;
+                backElement.textContent = flashcards[currentIndex].a;
+                progressElement.textContent = `Carta ${currentIndex + 1} de ${flashcards.length}`;
+            }, 150);
+        }
+
+        function flipCard() {
+            cardElement.classList.toggle('flip');
+        }
+
+        function nextCard() {
+            currentIndex = (currentIndex + 1) % flashcards.length;
+            updateCard();
+        }
+
+        function prevCard() {
+            currentIndex = (currentIndex - 1 + flashcards.length) % flashcards.length;
+            updateCard();
+        }
+
+        // Inicializa o primeiro card
+        updateCard();
+    </script>
+</body>
+</html>
